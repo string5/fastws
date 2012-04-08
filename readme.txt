@@ -12,3 +12,17 @@ client端，支持原生websocket。flash socket，用swfobject加载，加密�
 所有源文件，包括flash的，都在这个压缩包里 http://hdcafe.com/ws.rar
 
 希望得到的帮助： 找一个更简洁的webserver代替antinode 调通ie9 对version8/13加密解密部分的代码囫囵吞枣，不知其详，希望谁能消化并简化之
+
+
+settings.json
+	root: 设置成新的目录
+
+/client.html
+	Line 120: var ws = new WebSocket('ws://127.0.0.1:8080/')
+	change IP address to the server IP/domain
+
+server:
+	node node_ws_index.js
+
+client:
+	http://127.0.0.1/client.html
