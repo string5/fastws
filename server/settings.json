@@ -1,0 +1,14 @@
+{
+    "port" : 80,
+    "hosts" : {
+        "subdomain1.example.com" : { 
+            "root" : "/www/subdomain1/"
+        },
+        "subdomain2.example.com" : {
+            "root" : "/www/subdomain2/"
+        }
+        },
+    "default_host" : {
+        "root" : "/nodejs/ws/client/"
+    }
+}

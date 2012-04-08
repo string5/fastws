@@ -1,0 +1,132 @@
+<html>
+<body>
+Chat : <input id='chat' type='text' value='' size='20'/>
+<button onclick="sent()">Sent</button>
+<div id='content'></div>
+</body>
+</html>
+<script>
+//http://www.codeproject.com/Articles/209041/HTML5-Web-Socket-in-Essence
+function $D(tag){
+	return document.createElement(tag||'div');
+}
+function $A(ele, father){
+	father = father || document.body;
+	father.appendChild(ele);
+}
+function $(tag){
+	return document.getElementById(tag);
+}
+function I(ele, str){
+	ele.innerHTML = str||'';
+}
+
+div_content = $('content');
+function showMsg(msg){
+	I(div_content, div_content.innerHTML + '<br >' + msg);
+
+}
+function sent(){
+	ws.send($('chat').value);
+}
+
+//websocket
+WebSocket = window.WebSocket || window.MozWebSocket;
+if(!WebSocket ){
+	//解决flash加载对象或事件不存在的问题
+	//详见http://apps.hi.baidu.com/share/detail/11409390
+	jsReady=false;
+	swfReady=false;
+	document.body.onload = function(){
+	   jsReady=true;
+	} ;
+	isReady = function(){
+		return jsReady;
+	};
+	setSwfIsReady = function(){
+		//alert('read');
+		swfReady=true;
+		//swfObj = getSWF('demo5');
+		swfObj = $('demo5');
+		connectWS();
+		//setTimeout(connectWS, 0);
+	};
+	connectWS = function(){
+		try{
+			swfObj.Connect(ws.host,ws.port);
+		}catch(e){
+			document.title = e;
+		}
+	};
+
+	var div = $D('div');
+	div.id = "flashdiv";
+	$A(div);
+	
+	callback = function(){
+		swfobject.embedSWF(
+		  "flashwebsocket.swf",
+		  "flashdiv",
+		  "1" /* width */,
+		  "1" /* height */,
+		  "10.0.0" /* SWF version */,
+		  null,
+		  null,
+		  {hasPriority: true, swliveconnect : true, allowScriptAccess: "always"},
+		  {id:'demo5'}
+		);
+	}
+	var script = $D('script');
+	script.type = "text/javascript";
+	if (script.readyState){ //IE
+		script.onreadystatechange = function(){
+			if (script.readyState == "loaded" || script.readyState == "complete"){
+				script.onreadystatechange = null;
+				callback();
+			}
+		};
+	} else { //Others
+		script.onload = function(){
+			callback();
+		};
+	}
+	script.src = 'swfobject.js';
+	$A(script);
+
+	WebSocket = function(a){
+		var z = a.substring(5);
+		var pos = z.indexOf('/');
+		var z = z.substring(0,pos).split(':');
+		this.host = z[0];
+		this.port = z[1];
+		this.send = function(str){
+			swfObj.Send(str)
+		}
+	}
+	onMessage = function(a){
+		if(a==ws.host){
+			ws.onopen();
+		}else if(a=='Close'){
+			ws.onclose();
+		}else{
+			var z = {
+				data: a
+			}
+			ws.onmessage(z);
+		}
+	}
+}
+
+var ws = new WebSocket('ws://127.0.0.1:8080/');
+
+ws.onopen    = function(){
+	showMsg('onopen');
+};
+ws.onclose   = function(){
+	showMsg('onclose');
+};
+ws.onmessage = function(msg){
+	showMsg(msg.data);
+};
+
+</script>
